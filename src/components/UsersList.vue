@@ -1,9 +1,10 @@
 
     <template>
     <div>
+        <button @click="random">Reordenar</button>
         <slot></slot>
-        <ul id="user-list" class="loaded">
-            <li v-for="user in users"  :key="user.username">
+        <transition-group name="slide" tag="ul" id="user-list" class="loaded">
+            <li v-for="user in users"  :key="user.username" @click="removeUser(user)">
                 <img :src="user.image" :alt="`${user.name.first} ${user.name.last}`">
                 <div>
                     <slot name="title" :user="user">
@@ -23,7 +24,7 @@
                     </slot>
                 </div>
             </li>
-        </ul>
+        </transition-group>
     </div>
     </template>
     
@@ -35,6 +36,14 @@
     return{
       users: []
     }
+  },
+  methods: {
+      removeUser(userToRemove){
+          this.users = this.users.filter(user=> userToRemove !== user)
+      },
+      random(){
+          this.users.sort(()=> Math.random()-0.5) 
+      }
   },
   created(){
    fetch("https://randomuser.me/api/?results=10")
@@ -56,6 +65,23 @@
     <style lang="scss">
       @import url("https://fonts.googleapis.com/css?family=Oxygen:400,700,300");
       @import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css");
+
+        
+        .slide-enter{
+            transform: translateX(500px);
+        }
+        .slide-enter-active{
+            transition: all 1s
+        }
+        .slide-leave-to{
+           transform: translateX(-500px);
+        }
+         .slide-leave-active{
+            transition: all 1s
+        }
+        .slide-move {   
+            transition: all 1s
+        }
      
        #user-list {
         max-width: 550px;
